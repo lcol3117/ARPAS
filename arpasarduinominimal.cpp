@@ -66,16 +66,44 @@ void scan(int [1024] resolutionPath, int [1024] prevImage) {
 }
 
 void phasedArray(float angX, float angY, int pointToSave) {
-  directionEncodingA = (angX >= 0)?0:1;
-  directionEncodingB = (angY >= 0)?0:2;
+  directionEncodingA = (angX >= 0);
+  directionEncodingB = (angY >= 0);
   timingA = calcPhasedArrayTimings(angX);
   timingB = calcPhasedArrayTimings(angY);
   timingA = timingA*100;
   timingB = timingB*100;
+  runPhasedArray(timingA,timingB,directionEncodingA,directionEncodingB)
 }
 
 int calcPhasedArrayTimings(float ang) {
   //calculate phased array timngs here
 }
 
-
+void runPhasedArray(int timingA, int timingB, boolean directionEncodingA, boolean directionEncodingB) {
+  //run the phased array
+  digitalWrite(6,LOW); //reste dorun
+  digitalWrite(10,HIGH);
+  delay(1);                  //RESET ALL
+  digitalWrite(10,LOW);
+  
+  digitalWrite(7,LOW); //SELECT A REGISTER
+  
+  for(int i = 0; i<19; i++){
+    digitalWrite((bitRead(timingA, i) == 0)?HIGH:LOW);
+    digitalWrite(5,HIGH);
+    delay(1);                  //CLOCK
+    digitalWrite(5,LOW);
+  }
+  digitalWrite(7,HIGH); //SELECT B REGISTER
+  
+  for(int i = 0; i<19; i++){
+    digitalWrite((bitRead(timingB, i) == 0)?HIGH:LOW);
+    digitalWrite(5,HIGH);
+    delay(1);                  //CLOCK
+    digitalWrite(5,LOW);
+  }
+  //set and run
+  digitalWrite(8,directionEncodingA?HIGH:LOW);
+  digitalWrite(9,directionEncodingB?HIGH:LOW);
+  digitalWrite(6,HIGH);
+}

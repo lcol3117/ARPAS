@@ -29,6 +29,7 @@ void setup() {
   pinMode(8,OUTPUT);  //PHMUXA
   pinMode(9,OUTPUT);  //PHMUXB
   pinMode(10,OUTPUT); //RSTALL
+  pinMode(A2,INPUT); //NEXTPHASEDARRAY
   digitalWrite(4,LOW);
   digitalWrite(5,LOW);
   digitalWrite(6,LOW);
@@ -76,12 +77,12 @@ void phasedArray(float angX, float angY, int pointToSave) {
 }
 
 int calcPhasedArrayTimings(float ang) {
-  //calculate phased array timngs here
+  //calculate phased array timings here
 }
 
 void runPhasedArray(int timingA, int timingB, boolean directionEncodingA, boolean directionEncodingB) {
   //run the phased array
-  digitalWrite(6,LOW); //reste dorun
+  digitalWrite(6,LOW); //reset dorun
   digitalWrite(10,HIGH);
   delay(1);                  //RESET ALL
   digitalWrite(10,LOW);

@@ -1,6 +1,8 @@
 int image [1024];
 int hilbertResolutionPath [1024];
 
+int * currentPixel;
+
 int currentPoint = 0;
 int currentX = 0;
 int currentY = 0;
@@ -48,17 +50,18 @@ void loop() {
   // put your main code here, to run repeatedly:
   if (millis()%1000<=5) {
     scan(hilbertResolutionPath, image);
-    hilbertResolutionPath = hilbertEdgeDetection(image);
+    updateHilbertResolutionPath(image);
   }
 }
 
-void scan(int [1024] resolutionPath, int [1024] prevImage) {
+void scan(int * [1024] resolutionPath, int [1024] prevImage) {
   // code to calculate degrees here
   // then call phasedArray(angX,angY,pointToSave)
   for (int i = 0; i < 1023; i++) {
     currentPoint = resolutionPath[i];
     currentX = currentPoint % 32;
     currentY = floor(currentPoint / 32);
+    currentPixel = &(image[currentPoint]);
     currentD = prevImage[currentPoint];
     degX = asin(currentX / currentD);
     degY = asin(currentY / currentD);

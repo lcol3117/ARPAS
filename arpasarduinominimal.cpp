@@ -21,6 +21,10 @@ int timingB = 0;
 int timingAcc = 0;
 int timingBcc = 0;
 
+struct sonar {
+  enum pins {trig=true,echo=false};
+}
+
 void setup() {
   // put your setup code here, to run once:
   pinMode(0,INPUT);   //FORWARDED
@@ -31,7 +35,7 @@ void setup() {
   pinMode(8,OUTPUT);  //PHMUXA
   pinMode(9,OUTPUT);  //PHMUXB
   pinMode(10,OUTPUT); //RSTALL
-  pinMode(A2,INPUT); //NEXTPHASEDARRAY
+  pinMode(A0,INPUT); //NEXTPHASEDARRAY
   digitalWrite(4,LOW);
   digitalWrite(5,LOW);
   digitalWrite(6,LOW);
@@ -52,6 +56,37 @@ void loop() {
     scan(hilbertResolutionPath, image);
     updateHilbertResolutionPath(image);
   }
+}
+
+void onFPGAUpdate(int * pixelToUpdate, int * pixelLoc){
+  int currPin = getSONARPin(sonar::pins::trig,*pixelLoc)
+  digitalWrite(currPin,LOW);
+  delayMicroseconds(2);
+  digitalWrite(currPin,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(currPin,LOW);
+  currPin = updatePixelLoc(pixelLoc);
+  if (*pixelLoc==3) {updatePixel(pixelToUpdate,*pixelLoc);}
+}
+
+void updatePixel(int ** pixelToUpdate, int pixelLoc){
+  double dur = pulseIn(getSONARPin(sonar::pins::echo,pixelLoc));
+  double dist = dur*0.034/2;
+  **pixelToUpdate = threshold(dist);
+}
+
+int updatePixelLoc(int ** ploc){
+  if (**ploc==3) {**ploc=0;return -1;}
+  **ploc=**ploc+1;
+  return -1;
+}
+
+int getSONARPin(boolean isTrig, int pixelLoc) {
+  if (!isTrig) {return 16;}
+  if (pixelLoc==0) {return 17;}
+  if (pixelLoc==1) {return 18;}
+  if (pixelLoc==2) {return 19;}
+  if (pixelLoc==3) {return 20;}
 }
 
 void scan(int * [1024] resolutionPath, int [1024] prevImage) {

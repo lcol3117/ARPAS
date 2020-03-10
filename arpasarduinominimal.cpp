@@ -53,7 +53,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   if (millis()%1000<=5) {
-    scan(hilbertResolutionPath, image);
+    scan(hilbertResolutionPath);
     updateHilbertResolutionPath(image);
   }
 }
@@ -89,11 +89,11 @@ int getSONARPin(boolean isTrig, int pixelLoc) {
   if (pixelLoc==3) {return 20;}
 }
 
-void scan(int * [1024] resolutionPath, int [1024] prevImage) {
+void scan(int * [1024] resolutionPath) {
   // code to calculate degrees here
   // then call phasedArray(angX,angY,pointToSave)
   for (int i = 0; i < 1023; i++) {
-    currentPoint = resolutionPath[i];
+    currentPoint = (*resolutionPath)[i];
     currentX = currentPoint % 32;
     currentY = floor(currentPoint / 32);
     currentPixel = &(image[currentPoint]);

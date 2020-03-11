@@ -1,7 +1,7 @@
 int image [1024];
 int hilbertResolutionPath [1024];
 
-int * currentPixel;
+int * currPixel;
 
 int currentPoint = 0;
 int currentX = 0;
@@ -23,9 +23,13 @@ int timingBcc = 0;
 
 int pixelLoc = 0;
 
+boolean didFPGAInterrupt = false;
+
 struct sonar {
   enum pins {trig=true,echo=false};
 }
+
+void onFPGAUpdate(){didFPGAInterrupt = true;}
 
 void setup() {
   // put your setup code here, to run once:
@@ -50,10 +54,15 @@ void setup() {
     hilbertResolutionPath[i] = i;
     image[i] = 0;
   }
+  currPixel = &(image[0]);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  if (didFPGAInterrupt) {
+    onImageUpdate(currPixel);
+    didFPGAInterrupt = false;
+  }
   if (millis()%1000<=5) {
     scan(hilbertResolutionPath);
     updateHilbertResolutionPath(image);

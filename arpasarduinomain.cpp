@@ -1,7 +1,9 @@
-int image [1024];
+boolean image [1024];
 int hilbertResolutionPath [1024];
 
 int * currPixel;
+
+int distThreshold = 51;
 
 int currentPoint = 0;
 int currentX = 0;
@@ -21,6 +23,8 @@ int timingB = 0;
 int timingAcc = 0;
 int timingBcc = 0;
 
+boolean isEdge = false;
+
 int pixelLoc = 0;
 
 boolean didFPGAInterrupt = false;
@@ -30,6 +34,8 @@ struct sonar {
 }
 
 void onFPGAUpdate(){didFPGAInterrupt = true;}
+
+boolean threshold(int distToThresh) {return (distToThresh>distThreshold);}
 
 void setup() {
   // put your setup code here, to run once:
@@ -52,7 +58,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(1),onFPGAUpdate, RISING);
   for (int i = 0; i < 1023; i++) {
     hilbertResolutionPath[i] = i;
-    image[i] = 0;
+    image[i] = false;
   }
   currPixel = &(image[0]);
 }
@@ -64,7 +70,7 @@ void loop() {
     didFPGAInterrupt = false;
   }
   if (millis()%1000<=5) {
-    scan(hilbertResolutionPath);
+    scan();
     updateHilbertResolutionPath(image);
   }
 }
@@ -109,18 +115,20 @@ int getSONARPin(boolean isTrig, int pLoc) {
   if (pLoc==3) {return 20;}
 }
 
-void scan(int * [1024] resolutionPath) {
+void scan() {
   // code to calculate degrees here
   // then call phasedArray(angX,angY,pointToSave)
   for (int i = 0; i < 1023; i++) {
-    currentPoint = (*resolutionPath)[i];
-    currentX = currentPoint % 32;
-    currentY = floor(currentPoint / 32);
-    currentPixel = &(image[currentPoint]);
-    currentD = prevImage[currentPoint];
-    degX = asin(currentX / currentD);
-    degY = asin(currentY / currentD);
-    phasedArray(degX, degY, currentPoint);
+    currentPoint = hilbertResolutionPath[i];
+    if (!(currentPoint == -1)) {
+      currentX = currentPoint % 32;
+      currentY = floor(currentPoint / 32);
+      currentPixel = &(image[currentPoint]);
+      currentD = prevImage[currentPoint];
+      degX = asin(currentX / currentD);
+      degY = asin(currentY / currentD);
+      phasedArray(degX, degY, currentPoint);
+    }
   }
 }
 
@@ -136,6 +144,7 @@ void phasedArray(float angX, float angY, int pointToSave) {
 
 int calcPhasedArrayTimings(float ang) {
   //calculate phased array timings here
+  return ((PI*sin(ang)-PI)/-2);
 }
 
 void runPhasedArray(int timingA, int timingB, boolean directionEncodingA, boolean directionEncodingB) {
@@ -165,4 +174,20 @@ void runPhasedArray(int timingA, int timingB, boolean directionEncodingA, boolea
   digitalWrite(8,directionEncodingA?HIGH:LOW);
   digitalWrite(9,directionEncodingB?HIGH:LOW);
   digitalWrite(6,HIGH);
+}
+
+void updateHilbertResolutionPath(boolean [1024] im){
+  for (int i = 33; i < 990; i++) {
+    isEdge = ((im[i]^im[i+1])|(im[i]^im[i-1])|(im[i]^im[i+32])|(im[i]^im[i-32]));
+    if ((i%32<=1)|(i%32==31)) {isEdge=((im[i]^im[i+32])|(im[i]^im[i-32]));}
+    if (isEdge) {
+      hilbertResolutionPath[i] = i;
+    } else {
+      if (i%2==0) {
+        hilbertResolutionPath[i] = i;
+      } else {
+        hilbertResolutionPath[i] = -1;
+      }
+    }
+  }
 }

@@ -21,6 +21,8 @@ int timingB = 0;
 int timingAcc = 0;
 int timingBcc = 0;
 
+int pixelLoc = 0;
+
 struct sonar {
   enum pins {trig=true,echo=false};
 }
@@ -58,15 +60,24 @@ void loop() {
   }
 }
 
-void onFPGAUpdate(int * pixelToUpdate, int * pixelLoc){
-  int currPin = getSONARPin(sonar::pins::trig,*pixelLoc)
+void onFPGAUpdate(int * pixelToUpdate){
+  int currPin = getSONARPin(sonar::pins::trig,pixelLoc)
   digitalWrite(currPin,LOW);
   delayMicroseconds(2);
   digitalWrite(currPin,HIGH);
   delayMicroseconds(10);
   digitalWrite(currPin,LOW);
-  currPin = updatePixelLoc(pixelLoc);
-  if (*pixelLoc==3) {updatePixel(pixelToUpdate,*pixelLoc);}
+  updatePixelLoc();
+  mPLocFDir = gMPLocFDirGiven(directionEncodingA,directionEncodingB);
+  if (pixelLoc==mPLocFDir) {updatePixel(pixelToUpdate,pixelLoc);}
+}
+
+int gMPLocFDirGiven(gDirEA,gDirEB){
+  if (gDirEA){
+    if (gDirEB){return 1;}else{return 3;}
+  } else {
+    if (gDirEB){return 0;}else{return 2;}
+  }
 }
 
 void updatePixel(int ** pixelToUpdate, int pixelLoc){
@@ -75,18 +86,18 @@ void updatePixel(int ** pixelToUpdate, int pixelLoc){
   **pixelToUpdate = threshold(dist);
 }
 
-int updatePixelLoc(int ** ploc){
-  if (**ploc==3) {**ploc=0;return -1;}
-  **ploc=**ploc+1;
+int updatePixelLoc(){
+  if (pixelLoc==3) {pixelLoc=0;return -1;}
+  pixelLoc=pixelLoc+1;
   return -1;
 }
 
-int getSONARPin(boolean isTrig, int pixelLoc) {
+int getSONARPin(boolean isTrig, int pLoc) {
   if (!isTrig) {return 16;}
-  if (pixelLoc==0) {return 17;}
-  if (pixelLoc==1) {return 18;}
-  if (pixelLoc==2) {return 19;}
-  if (pixelLoc==3) {return 20;}
+  if (pLoc==0) {return 17;}
+  if (pLoc==1) {return 18;}
+  if (pLoc==2) {return 19;}
+  if (pLoc==3) {return 20;}
 }
 
 void scan(int * [1024] resolutionPath) {

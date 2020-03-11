@@ -45,7 +45,7 @@ void setup() {
   digitalWrite(8,LOW);
   digitalWrite(9,LOW);
   digitalWrite(10,LOW);
-  attachInterrupt(digitalPinToInterrupt(1),updateImage);
+  attachInterrupt(digitalPinToInterrupt(1),onFPGAUpdate, RISING);
   for (int i = 0; i < 1023; i++) {
     hilbertResolutionPath[i] = i;
     image[i] = 0;
@@ -60,7 +60,7 @@ void loop() {
   }
 }
 
-void onFPGAUpdate(int * pixelToUpdate){
+void onImageUpdate(int * pixelToUpdate){
   int currPin = getSONARPin(sonar::pins::trig,pixelLoc)
   digitalWrite(currPin,LOW);
   delayMicroseconds(2);

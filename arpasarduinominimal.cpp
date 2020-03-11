@@ -74,9 +74,9 @@ void onFPGAUpdate(int * pixelToUpdate){
 
 int gMPLocFDirGiven(gDirEA,gDirEB){
   if (gDirEA){
-    if (gDirEB){return 1;}else{return 3;}
+    if (gDirEB){return 1;} else {return 3;}
   } else {
-    if (gDirEB){return 0;}else{return 2;}
+    if (gDirEB){return 0;} else {return 2;}
   }
 }
 

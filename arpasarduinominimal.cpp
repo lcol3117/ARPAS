@@ -37,7 +37,7 @@ void setup() {
   pinMode(8,OUTPUT);  //PHMUXA
   pinMode(9,OUTPUT);  //PHMUXB
   pinMode(10,OUTPUT); //RSTALL
-  pinMode(A0,INPUT); //NEXTPHASEDARRAY
+  pinMode(15,INPUT); //NEXTPHASEDARRAY
   digitalWrite(4,LOW);
   digitalWrite(5,LOW);
   digitalWrite(6,LOW);

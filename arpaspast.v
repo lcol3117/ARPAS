@@ -18,7 +18,7 @@
 // Additional Comments: 
 //	See all docs at github.com/lcol3117/arpas
 //////////////////////////////////////////////////////////////////////////////////
-module arpaspast(
+module top_module(
     input sysclk,
     input pdorun,
     input regdat,
@@ -28,9 +28,9 @@ module arpaspast(
     input rstall,
     output allout
     );
-	 wire dra;
-	 wire drb;
-	 wire drc;
+	 wire drac;
+	 wire drbc;
+	 wire drcc;
 	 wire ftmao;
 	 wire ftmbo;
 	 wire ftmco;
@@ -52,7 +52,7 @@ module srl(
     wire qt;
     wire qnt;
 	 wire inrace;
-	 wire tqnt;
+	 wire atqnt;
 	 assign inrace = qt&qnt;
 	 assign atqnt = r|inrace;
     assign qnt = ~(atqnt&qt);
@@ -146,7 +146,7 @@ module rbcfour(
 	 wire fsfob;
 	 wire fsfoc;
 	 wire fsfod;
-	 assign cnsrt = (~srst)&si;
+	 assign cnrst = (~srst)&si;
 	 assign crst = srst&(syclk&(snrstd));
 	 assign acbcfd = crst|cnrst;
 	 bcfour sfrbcf (acbcfd,fsfoa,fsfob,fsfoc,fsfod);
@@ -238,37 +238,37 @@ module rbcthirteen(
 	 wire crst;
 	 wire acbcfd;
 	 wire snrstd;
-	 wire fsfoa;
-	 wire fsfob;
-	 wire fsfoc;
-	 wire fsfod;
-	 wire fsfoe;
-	 wire fsfof;
-	 wire fsfog;
-	 wire fsfoh;
-	 wire fsfoi;
-	 wire fsfoj;
-	 wire fsfok;
-	 wire fsfol;
-	 wire fsfom;
-	 assign cnsrt = (~srst)&si;
+	 wire fsfsoa;
+	 wire fsfsob;
+	 wire fsfsoc;
+	 wire fsfsod;
+	 wire fsfsoe;
+	 wire fsfsof;
+	 wire fsfsog;
+	 wire fsfsoh;
+	 wire fsfsoi;
+	 wire fsfsoj;
+	 wire fsfsok;
+	 wire fsfsol;
+	 wire fsfsom;
+	 assign cnrst = (~srst)&si;
 	 assign crst = srst&(syclk&(snrstd));
 	 assign acbcfd = crst|cnrst;
-	 bcthirteen sfrbcf (acbcfd,sfsoa,sfsob,sfsoc,sfsod,sfsoe,sfsof,sfsog,sfsoh,sfsoi,sfsoj,sfsok,sfsol,sfsom);
-	 assign snrstd = (sfsoa|sfsob|sfsoc|sfsod|sfsoe|sfsof|sfsog|sfsoh|sfsoi|sfsoj|sfsok|sfsol|sfsom);
-	 assign sfoa = fsfoa;
-	 assign sfob = fsfob;
-	 assign sfoc = fsfoc;
-	 assign sfod = fsfod;
-	 assign sfoe = fsfoe;
-	 assign sfof = fsfof;
-	 assign sfog = fsfog;
-	 assign sfoh = fsfoh;
-	 assign sfoi = fsfoi;
-	 assign sfoj = fsfoj;
-	 assign sfok = fsfok;
-	 assign sfol = fsfol;
-	 assign sfom = fsfom;
+	 bcthirteen sfrbcf (acbcfd,fsfsoa,fsfsob,fsfsoc,fsfsod,fsfsoe,fsfsof,fsfsog,fsfsoh,fsfsoi,fsfsoj,fsfsok,fsfsol,fsfsom);
+	 assign snrstd = (fsfsoa|fsfsob|fsfsoc|fsfsod|fsfsoe|fsfsof|fsfsog|fsfsoh|fsfsoi|fsfsoj|fsfsok|fsfsol|fsfsom);
+	 assign sfoa = fsfsoa;
+	 assign sfob = fsfsob;
+	 assign sfoc = fsfsoc;
+	 assign sfod = fsfsod;
+	 assign sfoe = fsfsoe;
+	 assign sfof = fsfsof;
+	 assign sfog = fsfsog;
+	 assign sfoh = fsfsoh;
+	 assign sfoi = fsfsoi;
+	 assign sfoj = fsfsoj;
+	 assign sfok = fsfsok;
+	 assign sfol = fsfsol;
+	 assign sfom = fsfsom;
 	 
 endmodule
 
@@ -418,8 +418,8 @@ module fltmr(
 	 input ftsysclk,
 	 input ftdorun,
 	 input ftrdat,
-	 input fdrclk,
-	 input fdrstall,
+	 input ftrclk,
+	 input ftrstall,
 	 output thisout
 	 );
 	 wire roa;
@@ -480,4 +480,4 @@ module fltmr(
 	 
 endmodule
 
-//END
+//END OF FILE

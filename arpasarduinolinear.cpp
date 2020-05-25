@@ -3,6 +3,7 @@ const int trigPinA = 4;
 const int trigPinB = 5;
 const int echoPinB = 6;
 const int echoPinA = 7;
+const int fpgaPin = 2;
 // defines variables
 long duration;
 int distance;
@@ -35,6 +36,7 @@ void setup() {
   pinMode(trigPinB, OUTPUT);
   pinMode(echoPinA, INPUT); // Sets the echoPins as Inputs
   pinMode(echoPinB, INPUT);
+  pinMode(fpgaPin, INPUT); //Sets the FPGA pin (P3/P2-9 on board, P34 in code) as an input from FPGA to arduino
   Serial.begin(9600); // Starts the serial communication
 }
 void loop() {
@@ -204,7 +206,7 @@ void runSONAR(boolean isRight) {
 }
 void readSONAR(int wheretogo) {
   // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration = pulseIn((desiredangle)?echoPinA:echoPinB, HIGH); //Use appropriate sensing port
+  duration = pulseIn(getAppropriateEchoPort(), HIGH); //Use appropriate sensing port as determined by FPGA
   // Calculating the distance
   distance = duration*0.034/2;
   //Save data
@@ -231,4 +233,17 @@ void readSONAR(int wheretogo) {
   if (wheretogo==5){if(distance<=51){ar5mark=true;}else{ar5mark=false;}}
   if (wheretogo==6){if(distance<=51){ar6mark=true;}else{ar6mark=false;}}
   if (wheretogo==7){if(distance<=51){ar7mark=true;}else{ar7mark=false;}}
+}
+int getAppropriateEchoPort() {
+  //Get the appropriate port to recieve the echo from, as determined by the FPGA
+  auto fpgaPinState = digitalRead(fpgaPin);
+  boolean FPGAResult; //Allocate
+  FPGAResult = (&fpgaPinState == &HIGH); //HIGH and LOW are not boolean, so use structural equality
+  if (!FPGAResult) {
+    FPGAResult = (fpgaPinState == HIGH);
+  }
+  const int pinWhen0 = echoPinA;
+  const int pinWhen1 = echoPinB;
+  int pinResult = FPGAResult?pinWhen1:pinWhen0;
+  return pinResult;
 }
